@@ -1,11 +1,11 @@
 package com.tlcsdm.common;
 
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
@@ -80,7 +80,7 @@ public class BaseUtils {
             return CN_ZEOR_FULL;
         }
         // 这里会进行金额的四舍五入
-        long number = numberOfMoney.movePointRight(MONEY_PRECISION).setScale(0, 4).abs().longValue();
+        long number = numberOfMoney.movePointRight(MONEY_PRECISION).setScale(0, RoundingMode.HALF_UP).abs().longValue();
         // 得到小数点后两位值
         long scale = number % 100;
         int numUnit = 0;
@@ -472,14 +472,14 @@ public class BaseUtils {
         //标题栏样式
         HSSFCellStyle style = wb.createCellStyle();
         HSSFFont font = wb.createFont();
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直
+        style.setVerticalAlignment(VerticalAlignment.CENTER);//垂直
         font.setFontHeightInPoints((short) 12);//设置字体大小
         style.setFont(font);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN); //下边框
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setBorderBottom(BorderStyle.THIN); //下边框
+        style.setBorderLeft(BorderStyle.THIN);//左边框
+        style.setBorderTop(BorderStyle.THIN);//上边框
+        style.setBorderRight(BorderStyle.THIN);//右边框
 
         HSSFCell cell0 = row.createCell(0);
         cell0.setCellValue("序号");
@@ -493,11 +493,11 @@ public class BaseUtils {
         //添加边框
         HSSFCellStyle cellStyle = wb.createCellStyle();
         cellStyle.setWrapText(true);//自动换行
-        cellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN); //下边框
-        cellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框
-        cellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
-        cellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框
-        cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 水平居中
+        cellStyle.setBorderBottom(BorderStyle.THIN); //下边框
+        cellStyle.setBorderLeft(BorderStyle.THIN);//左边框
+        cellStyle.setBorderTop(BorderStyle.THIN);//上边框
+        cellStyle.setBorderRight(BorderStyle.THIN);//右边框
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);// 水平居中
 
         for (int i = 0; i < list.size(); i++) {
             row = sheet.createRow(i + 1);
@@ -593,7 +593,7 @@ public class BaseUtils {
             return "";
         }
         switch (cell.getCellType()) {
-            case Cell.CELL_TYPE_NUMERIC:// 数字类型
+            case NUMERIC:// 数字类型
                 if (HSSFDateUtil.isCellDateFormatted(cell)) {// 处理日期格式、时间格式
                     SimpleDateFormat sdf = null;
                     if (cell.getCellStyle().getDataFormat() == HSSFDataFormat.getBuiltinFormat("h:mm")) {
@@ -621,13 +621,13 @@ public class BaseUtils {
                     result = format.format(value);
                 }
                 break;
-            case Cell.CELL_TYPE_STRING:// String类型
+            case STRING:// String类型
                 result = cell.getRichStringCellValue().toString();
                 break;
-            case Cell.CELL_TYPE_BLANK:
+            case BLANK:
                 result = "";
                 break;
-            case Cell.CELL_TYPE_FORMULA:
+            case FORMULA:
                 result = String.valueOf(cell.getNumericCellValue());
                 break;
             default:
