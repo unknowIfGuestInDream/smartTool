@@ -7,6 +7,21 @@
     <groupId>com.tlcsdm</groupId>
     <artifactId>smartTool</artifactId>
     <version>1.0.0</version>
+    <name>smartTool</name>
+    <description>用于在无maven环境时，可以开发一些解决日常工作的组件库</description>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <url>https://github.com/UnknownInTheDream/smartTool</url>
+    <developers>
+        <developer>
+            <name>tangliang</name>
+            <email>tang97155@163.com</email>
+        </developer>
+    </developers>
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
