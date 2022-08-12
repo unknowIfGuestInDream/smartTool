@@ -1,6 +1,7 @@
 package com.tlcsdm.common;
 
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.*;
@@ -453,7 +454,7 @@ public class BaseUtils {
      * @param list  导出数据 如果有数据需要格式化或者其它操作，可将数据处理后再传入
      * @param map   key 表头 value 字段名
      */
-    public static void dealCommonExcel(HSSFWorkbook wb, HSSFSheet sheet, List<Map<String, Object>> list, LinkedHashMap<String, String> map) {
+    public static void dealCommonExcel(Workbook wb, Sheet sheet, List<Map<String, Object>> list, LinkedHashMap<String, String> map) {
         int length = map.size() + 1;
         List<String> keyList = new ArrayList<>(length);
         List<String> valueList = new ArrayList<>(length);
@@ -466,12 +467,12 @@ public class BaseUtils {
             sheet.setColumnWidth(i, sheet.getColumnWidth(i) * 2);
         }
 
-        HSSFRow row = sheet.createRow(0);
+        Row row = sheet.createRow(0);
         row.setHeightInPoints(30);
 
         //标题栏样式
-        HSSFCellStyle style = wb.createCellStyle();
-        HSSFFont font = wb.createFont();
+        CellStyle style = wb.createCellStyle();
+        Font font = wb.createFont();
         style.setVerticalAlignment(VerticalAlignment.CENTER);//垂直
         font.setFontHeightInPoints((short) 12);//设置字体大小
         style.setFont(font);
@@ -481,17 +482,17 @@ public class BaseUtils {
         style.setBorderTop(BorderStyle.THIN);//上边框
         style.setBorderRight(BorderStyle.THIN);//右边框
 
-        HSSFCell cell0 = row.createCell(0);
+        Cell cell0 = row.createCell(0);
         cell0.setCellValue("序号");
         cell0.setCellStyle(style);
         for (int i = 1; i < length; i++) {
-            HSSFCell cell = row.createCell(i);
+            Cell cell = row.createCell(i);
             cell.setCellValue(keyList.get(i - 1));
             cell.setCellStyle(style);
         }
 
         //添加边框
-        HSSFCellStyle cellStyle = wb.createCellStyle();
+        CellStyle cellStyle = wb.createCellStyle();
         cellStyle.setWrapText(true);//自动换行
         cellStyle.setBorderBottom(BorderStyle.THIN); //下边框
         cellStyle.setBorderLeft(BorderStyle.THIN);//左边框
@@ -503,7 +504,7 @@ public class BaseUtils {
             row = sheet.createRow(i + 1);
             row.setHeightInPoints(25);
 
-            HSSFCell cellContent = row.createCell(0);
+            Cell cellContent = row.createCell(0);
             cellContent.setCellValue(i + 1);
             cellContent.setCellStyle(cellStyle);
 
