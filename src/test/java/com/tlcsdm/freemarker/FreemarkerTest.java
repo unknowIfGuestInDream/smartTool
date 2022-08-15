@@ -53,4 +53,18 @@ public class FreemarkerTest {
         System.out.println(engine2);
         System.out.println(engine3);
     }
+
+    @Test
+    public void freemarkerEngineTest1() {
+        // 字符串模板
+        TemplateEngine engine1 = TemplateUtil.createEngine(
+                new TemplateConfig("templates", TemplateConfig.ResourceMode.STRING));
+        TemplateEngine engine2 = TemplateUtil.createEngine(
+                new TemplateConfig("templates", TemplateConfig.ResourceMode.STRING));
+        TemplateEngine engine3 = TemplateUtil.createEngine(
+                new TemplateConfig("templates", TemplateConfig.ResourceMode.CLASSPATH));
+        System.out.println(engine1);
+        System.out.println(engine2);
+        System.out.println(engine3);
+    }
 }
