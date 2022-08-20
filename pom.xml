@@ -163,6 +163,41 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/lib/freemarker-2.3.31.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>9.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/asm-9.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-util</artifactId>
+            <version>9.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/asm-util-9.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>9.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/asm-commons-9.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>9.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/asm-tree-9.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>9.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/asm-analysis-9.3.jar</systemPath>
+        </dependency>
     </dependencies>
     <properties>
         <java.version>11</java.version>
