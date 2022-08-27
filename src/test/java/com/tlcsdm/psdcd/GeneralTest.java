@@ -2,6 +2,7 @@ package com.tlcsdm.psdcd;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Console;
+import cn.hutool.core.lang.ConsoleTable;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
@@ -88,16 +89,18 @@ public class GeneralTest {
                 }
                 list.add(l);
             }
-            //待比对文件数据提取
+            //待比对文件数据抽取
             String generateFileParent = generateFilesParentPath.length() == 0 ? parentDirectoryPath : generateFilesParentPath;
             File generateFile = FileUtil.file(generateFileParent, generateFileName);
             if (FileUtil.exist(generateFile)) {
                 List<String> generateFileData = FileUtil.readUtf8Lines(generateFile);
+                //生成文件数据清洗
                 List<String> targetData = new ArrayList<>(generateFileData.size());
                 for (int j = 0; j < generateFileData.size(); j++) {
                     //暂不考虑第一行超过120字符换行的问题，因为第一行通常是自动生成的信息。
                     //处理模板中超过120字符而换行的数据行 考虑之前数据修改的问题。当前判定逻辑是10个空格开头的条件以及当前行是否为空白来判断是否为上一行数据的换行。
                     if (j > 0 && generateFileData.get(i).startsWith("          ") && StrUtil.isBlank(generateFileData.get(i))) {
+                        //TODO
                         //targetData.set
                         continue;
                     }
@@ -108,12 +111,16 @@ public class GeneralTest {
                     logHandler("The number of lines of document data and generated document data are not equal", 2);
                 }
 
+                //TODO
+                //遍历以文件数据进行遍历，是否需要考虑长度不同时的情况?
+                //去除空白是否需要考虑头部的空白？ excel文档数据第一列的空白是否需要保留？
                 //list逐行校验  整体校验 或者 总长度校验+indexOf校验?
                 //CompareUtil.compare()
 
                 //FileUtil.writeUtf8Lines(list, FileUtil.file(generateFilesParentPath.length() == 0 ? parentDirectoryPath : generateFilesParentPath, generateFileName));
-                //结果处理 保留比对信息 行数，暂时不考虑ok等结果
-                //考虑Console.table展示
+                //TODO
+                //结果处理 保留比对信息 文件行数，暂时不考虑ok等结果
+                //考虑Console.table展示，输出到文件?
 //                ConsoleTable t = ConsoleTable.create();
 //                t.addHeader("姓名", "年龄");
 //                t.addBody("张三", "15");
