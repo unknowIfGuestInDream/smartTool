@@ -61,8 +61,12 @@ public class GeneralTest {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 读取文档数据和生成的文件数据
+     * 判断文档数据每一个单元格是否在生成文件数据中
+     */
     @Test
-    public void getSheetsTest() {
+    public void generalTest1() {
         for (int i = 0; i < sheetNames.size(); i++) {
             logHandler("Start reading sheet: " + sheetNames.get(i), 1);
             ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName), sheetNames.get(i));
@@ -80,7 +84,7 @@ public class GeneralTest {
             for (int j = startY; j <= endY; j++) {
                 List<String> l = new ArrayList<>(endX - startX + 1);
                 for (int j2 = startX; j2 <= endX; j2++) {
-                    l.add(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j))));
+                    l.add(StrUtil.trim(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j)))));
                 }
                 list.add(l);
             }
@@ -92,24 +96,22 @@ public class GeneralTest {
                 List<String> targetData = new ArrayList<>(generateFileData.size());
                 for (int j = 0; j < generateFileData.size(); j++) {
                     //暂不考虑第一行超过120字符换行的问题，因为第一行通常是自动生成的信息。
-                    if (j == 0) {
-                        targetData.add(generateFileData.get(0));
+                    //处理模板中超过120字符而换行的数据行 考虑之前数据修改的问题。当前判定逻辑是10个空格开头的条件以及当前行是否为空白来判断是否为上一行数据的换行。
+                    if (j > 0 && generateFileData.get(i).startsWith("          ") && StrUtil.isBlank(generateFileData.get(i))) {
+                        //targetData.set
+                        continue;
                     }
-                    //处理模板中超过120字符而换行的数据行 考虑之前数据修改的问题。当前判定逻辑是5个空格开头的进行是否为换行的判断。
-                    if (generateFileData.get(i).startsWith("     ") && StrUtil.isBlank(generateFileData.get(i))) {
-//                        StrUtil.trimStart()
-//                        StrUtil.trimEnd()
-//                        StrUtil.trim();
-                    }
+                    targetData.add(StrUtil.trim(generateFileData.get(i)));
                 }
                 //两个list比对大小 如果大小不同那么报warning信息
+                if (targetData.size() != list.size()) {
+                    logHandler("The number of lines of document data and generated document data are not equal", 2);
+                }
 
-                //比对时最好去除空白进行比对
+                //list逐行校验  整体校验 或者 总长度校验+indexOf校验?
+                //CompareUtil.compare()
 
                 //FileUtil.writeUtf8Lines(list, FileUtil.file(generateFilesParentPath.length() == 0 ? parentDirectoryPath : generateFilesParentPath, generateFileName));
-                //抽取文件每一行 对五个空格开始的行进行转换过滤，形成一个list
-                //list逐个index.of 来进行校验
-                //CompareUtil.compare()
                 //结果处理 保留比对信息 行数，暂时不考虑ok等结果
                 //考虑Console.table展示
 //                ConsoleTable t = ConsoleTable.create();
@@ -126,7 +128,7 @@ public class GeneralTest {
     }
 
     @Test
-    public void generalTest1() {
+    public void test1() {
         ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName));
         CellLocation start = ExcelUtil.toLocation(startCell);
         CellLocation end = ExcelUtil.toLocation("F634");
