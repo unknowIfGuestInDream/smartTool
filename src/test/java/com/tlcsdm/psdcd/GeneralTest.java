@@ -16,8 +16,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.StringJoiner;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +53,8 @@ public class GeneralTest {
      */
     // 需要读取的sheetName集合
     private List<String> sheetNames;
+    //比对结果
+    private List<Map<String, String>> result = new ArrayList<>();
 
     @Before
     public void init() {
@@ -68,9 +71,10 @@ public class GeneralTest {
      */
     @Test
     public void generalTest1() {
-        for (int i = 0; i < sheetNames.size(); i++) {
-            logHandler("Start reading sheet: " + sheetNames.get(i), 1);
-            ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName), sheetNames.get(i));
+        for (String sheetName : sheetNames) {
+            logHandler("========================= BEGIN " + sheetName + " =========================", 1);
+            logHandler("Start reading sheet: " + sheetName, 1);
+            ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName), sheetName);
             String endCell = getEndCell(reader);
             logHandler("endCell: " + endCell, 1);
             CellLocation start = ExcelUtil.toLocation(startCell);
@@ -85,7 +89,14 @@ public class GeneralTest {
             for (int j = startY; j <= endY; j++) {
                 List<String> l = new ArrayList<>(endX - startX + 1);
                 for (int j2 = startX; j2 <= endX; j2++) {
-                    l.add(StrUtil.trim(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j)))));
+                    String cellValue;
+                    //首列的开头保留空格
+                    if (j == startY) {
+                        cellValue = StrUtil.trimEnd(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j))));
+                    } else {
+                        cellValue = StrUtil.trim(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j))));
+                    }
+                    l.add(cellValue);
                 }
                 list.add(l);
             }
@@ -99,84 +110,67 @@ public class GeneralTest {
                 for (int j = 0; j < generateFileData.size(); j++) {
                     //暂不考虑第一行超过120字符换行的问题，因为第一行通常是自动生成的信息。
                     //处理模板中超过120字符而换行的数据行 考虑之前数据修改的问题。当前判定逻辑是10个空格开头的条件以及当前行是否为空白来判断是否为上一行数据的换行。
-                    if (j > 0 && generateFileData.get(i).startsWith("          ") && StrUtil.isBlank(generateFileData.get(i))) {
-                        //TODO
-                        //targetData.set
+                    //且不会有连换两行的情况
+                    if (j > 0 && generateFileData.get(j).startsWith("          ") && StrUtil.isEmpty(generateFileData.get(j))) {
+                        targetData.set(targetData.size() - 1, targetData.get(targetData.size() - 1) + " " + StrUtil.trim(generateFileData.get(j)));
                         continue;
                     }
-                    targetData.add(StrUtil.trim(generateFileData.get(i)));
+                    targetData.add(StrUtil.trimEnd(generateFileData.get(j)));
                 }
                 //两个list比对大小 如果大小不同那么报warning信息
                 if (targetData.size() != list.size()) {
-                    logHandler("The number of lines of document data and generated document data are not equal", 2);
+                    logHandler("The number of lines of document data and generated document data are not equal in component " + sheetName, 2);
                 }
-
-                //TODO
-                //遍历以文件数据进行遍历，是否需要考虑长度不同时的情况?
-                //去除空白是否需要考虑头部的空白？ excel文档数据第一列的空白是否需要保留？
-                //list逐行校验  整体校验 或者 总长度校验+indexOf校验?
-                //CompareUtil.compare()
-
-                //FileUtil.writeUtf8Lines(list, FileUtil.file(generateFilesParentPath.length() == 0 ? parentDirectoryPath : generateFilesParentPath, generateFileName));
-                //TODO
-                //结果处理 保留比对信息 文件行数，暂时不考虑ok等结果
-                //考虑Console.table展示，输出到文件?
-//                ConsoleTable t = ConsoleTable.create();
-//                t.addHeader("姓名", "年龄");
-//                t.addBody("张三", "15");
-//                t.addBody("李四", "29");
-//                t.addBody("王二麻子", "37");
-//                t.print();
+                //数据比对
+                //list逐行校验, 以文档数据遍历, 判断每个单元格数据是否在当前行
+                for (int j = 0; j < list.size(); j++) {
+                    List<String> l = list.get(j);
+                    int startIndex = 0;
+                    for (String s : l) {
+                        if (StrUtil.isEmpty(s)) {
+                            continue;
+                        }
+                        startIndex = targetData.get(j).indexOf(s, startIndex);
+                        //不存在时
+                        if (startIndex == -1) {
+                            Map<String, String> map = new HashMap<>(4);
+                            map.put("line", String.valueOf(j + startX));
+                            result.add(map);
+                            break;
+                        }
+                    }
+                }
+                //结果信息处理
+                if (result.size() == 0) {
+                    logHandler(sheetName + " matching complete, no NG", 1);
+                } else {
+                    ConsoleTable t = ConsoleTable.create();
+                    t.addHeader("component", "line", "result");
+                    for (Map<String, String> stringStringMap : result) {
+                        t.addBody(sheetName, stringStringMap.get("line"), "NG");
+                    }
+                    FileUtil.writeUtf8Lines(list, FileUtil.file(parentDirectoryPath, excelName.substring(0, excelName.lastIndexOf(".")) + ".txt"));
+                }
             } else {
                 logHandler(generateFileName + " not found, please check that the file path is correct:\n" + generateFileParent + File.separator + generateFileName, 3);
             }
-            logHandler("========================= END =========================", 1);
-        }
-    }
-
-    @Test
-    public void test1() {
-        ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName));
-        CellLocation start = ExcelUtil.toLocation(startCell);
-        CellLocation end = ExcelUtil.toLocation("F634");
-        int startX = start.getX();
-        int startY = start.getY();
-        int endX = end.getX();
-        int endY = end.getY();
-        List<String> list = new ArrayList<>();
-        for (int i = startY; i <= endY; i++) {
-            StringJoiner sj = new StringJoiner(" ");
-            for (int j = startX; j <= endX; j++) {
-                sj.add(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j, i))));
-            }
-            list.add(sj.toString());
-        }
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i));
+            logHandler("========================= END " + sheetName + " =========================", 1);
         }
     }
 
     /**
-     * 读取指定行列的excel内容
+     * 需要读取的excel部分单独放到一个sheet,然后转换文本，运用其他工具进行比对
+     * 考虑手动生成测试文件：
+     * 遍历将区域内容读取生成到文件中
      */
     @Test
     @Ignore
-    public void workExcelContentTest1() {
+    public void generalTest2() {
+        String sheetName = "DMA";
+        String fileType = "h";
         ExcelReader reader = ExcelUtil
-                .getReader(FileUtil.file("C:\\workspace\\test\\TestSpec_General_RH850F1KH-D8.xlsx"), "DMA");
-        FileUtil.writeString(reader.readAsText(false), "C:\\workspace\\test\\text.c", CharsetUtil.CHARSET_UTF_8);
-    }
-
-    /**
-     * 读取指定行列的excel内容
-     */
-    @Test
-    @Ignore
-    public void workExcelContentTest2() {
-        ExcelReader reader = ExcelUtil
-                .getReader(FileUtil.file("C:\\workspace\\test\\TestSpec_General_RH850F1KH-D8.xlsx"), "DMA");
-        List<Object> list = reader.readColumn(2, 18, 629);
-        FileUtil.writeUtf8Lines(list, "C:\\workspace\\test\\text.c");
+                .getReader(FileUtil.file(parentDirectoryPath, excelName), sheetName);
+        FileUtil.writeString(reader.readAsText(false), FileUtil.file(parentDirectoryPath, sheetName + "." + fileType), CharsetUtil.CHARSET_UTF_8);
     }
 
     /**
