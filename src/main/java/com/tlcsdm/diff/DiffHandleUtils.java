@@ -1,6 +1,5 @@
 package com.tlcsdm.diff;
 
-import cn.hutool.core.io.resource.ResourceUtil;
 import com.github.difflib.UnifiedDiffUtils;
 import com.github.difflib.patch.Patch;
 
@@ -99,15 +98,14 @@ public class DiffHandleUtils {
             builder.append("\n");
         }
         //如果打开html为空白界面，可能cdn加载githubCss失败 ,githubCss 链接可替换为 https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/styles/github.min.css
-        //String githubCss = "https://cdn.jsdelivr.net/gh/1506085843/fillDiff@master/src/main/resources/css/github.min.css";
-        String githubCss = ResourceUtil.getResource("static/public/diff/github.min.css").getPath();
+        String githubCss = "https://cdn.jsdelivr.net/gh/1506085843/fillDiff@master/src/main/resources/css/github.min.css";
+        //String githubCss = ResourceUtil.getResource("static/public/diff/github.min.css").getPath();
         //如果打开html为空白界面，可能cdn加载diff2htmlCss失败 ,diff2htmlCss 链接可替换为 https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css
-        //String diff2htmlCss = "https://cdn.jsdelivr.net/gh/1506085843/fillDiff@master/src/main/resources/css/diff2html.min.css";
-        String diff2htmlCss = ResourceUtil.getResource("static/public/diff/diff2html.min.css").getPath();
+        String diff2htmlCss = "https://cdn.jsdelivr.net/gh/1506085843/fillDiff@master/src/main/resources/css/diff2html.min.css";
+        //String diff2htmlCss = ResourceUtil.getResource("static/public/diff/diff2html.min.css").getPath();
         //如果打开html为空白界面，可能cdn加载diff2htmlJs失败, diff2htmlJs 链接可替换为 https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html-ui.min.js
-        //String diff2htmlJs = "https://cdn.jsdelivr.net/gh/1506085843/fillDiff@master/src/main/resources/js/diff2html-ui.min.js";
-        String diff2htmlJs = ResourceUtil.getResource("static/public/diff/diff2html-ui.min.js").getPath();
-        //String diff2htmlJs = "E:\\javaWorkSpace\\smartTool\\src\\main\\resources\\static\\public\\diff\\diff2html-ui.min.js";
+        String diff2htmlJs = "https://cdn.jsdelivr.net/gh/1506085843/fillDiff@master/src/main/resources/js/diff2html-ui.min.js";
+        //String diff2htmlJs = ResourceUtil.getResource("static/public/diff/diff2html-ui.min.js").getPath();
         //如果githubCss、diff2htmlCss、diff2htmlJs都加载失败可从 https://github.com/1506085843/fillDiff/tree/main/src/main/resources下载css和js手动引入到html
         String template = "<!DOCTYPE html>\n" +
                 "<html lang=\"en-us\">\n" +
