@@ -15,8 +15,6 @@ import com.tlcsdm.diff.DiffHandleUtils;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Console;
-import cn.hutool.core.lang.ConsoleTable;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.BigExcelWriter;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -29,8 +27,6 @@ import cn.hutool.poi.excel.cell.CellUtil;
  * @since: 1.0
  */
 public class GeneralTest {
-
-	// https://blog.csdn.net/qq_33697094/article/details/121681707
 
 	/*
 	 * 需要定义的配置
@@ -57,8 +53,6 @@ public class GeneralTest {
 	 */
 	// 需要读取的sheetName集合
 	private List<String> sheetNames;
-	// 比对结果
-	private List<Map<String, String>> result = new ArrayList<>();
 
 	@Before
 	public void init() {
@@ -70,110 +64,10 @@ public class GeneralTest {
 	}
 
 	/**
-	 * 读取文档数据和生成的文件数据 判断文档数据每一个单元格是否在生成文件数据中
-	 */
-	@Test
-	public void generalTest1() {
-		for (String sheetName : sheetNames) {
-			logHandler("========================= BEGIN " + sheetName + " =========================", 1);
-			logHandler("Start reading sheet: " + sheetName, 1);
-			ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName), sheetName);
-			String endCell = getEndCell(reader);
-			logHandler("endCell: " + endCell, 1);
-			CellLocation start = ExcelUtil.toLocation(startCell);
-			CellLocation end = ExcelUtil.toLocation(endCell);
-			int startX = start.getX();
-			int startY = start.getY();
-			int endX = end.getX();
-			int endY = end.getY();
-			String generateFileName = reader.getCell(generateFileCell).getStringCellValue();
-			logHandler("generateFileName: " + generateFileName, 1);
-			List<List<String>> list = new ArrayList<>(endY - startY + 1);
-			for (int j = startY; j <= endY; j++) {
-				List<String> l = new ArrayList<>(endX - startX + 1);
-				for (int j2 = startX; j2 <= endX; j2++) {
-					String cellValue;
-					// 首列的开头保留空格
-					if (j == startY) {
-						cellValue = StrUtil.trimEnd(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j))));
-					} else {
-						cellValue = StrUtil.trim(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j))));
-					}
-					l.add(cellValue);
-				}
-				list.add(l);
-			}
-			// 待比对文件数据抽取
-			String generateFileParent = generateFilesParentPath.length() == 0 ? parentDirectoryPath
-					: generateFilesParentPath;
-			File generateFile = FileUtil.file(generateFileParent, generateFileName);
-			if (FileUtil.exist(generateFile)) {
-				List<String> generateFileData = FileUtil.readUtf8Lines(generateFile);
-				// 生成文件数据清洗
-				List<String> targetData = new ArrayList<>(generateFileData.size());
-				for (int j = 0; j < generateFileData.size(); j++) {
-					// 暂不考虑第一行超过120字符换行的问题，因为第一行通常是自动生成的信息。
-					// 处理模板中超过120字符而换行的数据行 考虑之前数据修改的问题。当前判定逻辑是10个空格开头的条件以及当前行是否为空白来判断是否为上一行数据的换行。
-					// 且不会有连换两行的情况
-					if (j > 0 && generateFileData.get(j).startsWith("          ")
-							&& StrUtil.isEmpty(generateFileData.get(j))) {
-						targetData.set(targetData.size() - 1,
-								targetData.get(targetData.size() - 1) + " " + StrUtil.trim(generateFileData.get(j)));
-						continue;
-					}
-					targetData.add(StrUtil.trimEnd(generateFileData.get(j)));
-				}
-				// 两个list比对大小 如果大小不同那么报warning信息
-				if (targetData.size() != list.size()) {
-					logHandler(
-							"The number of lines of document data and generated document data are not equal in component "
-									+ sheetName,
-							2);
-				}
-				// 数据比对
-				// list逐行校验, 以文档数据遍历, 判断每个单元格数据是否在当前行
-				for (int j = 0; j < list.size(); j++) {
-					List<String> l = list.get(j);
-					int startIndex = 0;
-					for (String s : l) {
-						if (StrUtil.isEmpty(s)) {
-							continue;
-						}
-						startIndex = targetData.get(j).indexOf(s, startIndex);
-						// 不存在时
-						if (startIndex == -1) {
-							Map<String, String> map = new HashMap<>(4);
-							map.put("line", String.valueOf(j + 1));
-							result.add(map);
-							break;
-						}
-					}
-				}
-				// 结果信息处理
-				if (result.size() == 0) {
-					logHandler(sheetName + " matching complete, no NG", 1);
-				} else {
-					ConsoleTable t = ConsoleTable.create();
-					t.addHeader("component", "line", "result");
-					for (Map<String, String> stringStringMap : result) {
-						t.addBody(sheetName, stringStringMap.get("line"), "NG");
-					}
-					FileUtil.writeUtf8String(t.toString(), FileUtil.file(parentDirectoryPath,
-							excelName.substring(0, excelName.lastIndexOf(".")) + ".txt"));
-				}
-			} else {
-				logHandler(generateFileName + " not found, please check that the file path is correct:\n"
-						+ generateFileParent + File.separator + generateFileName, 3);
-			}
-			logHandler("========================= END " + sheetName + " =========================", 1);
-		}
-	}
-
-	/**
 	 * 需要读取的excel部分单独放到一个sheet,然后转换文本，运用其他工具进行比对 考虑手动生成测试文件： 遍历将区域内容读取生成到文件中
 	 */
 	@Test
-	public void generalTest2() {
+	public void generalTest1() {
 		File testFile = FileUtil.file(parentDirectoryPath, excelName);
 		Map<String, String> generateFileMap = new HashMap<>();
 		for (String sheetName : sheetNames) {
@@ -201,14 +95,7 @@ public class GeneralTest {
 					isDefine = true;
 				}
 				for (int j2 = startX; j2 <= endX; j2++) {
-					String cellValue = "";
-					// 首列的开头保留空格
-//					if (j2 == startX) {
-//						cellValue = StrUtil.trimEnd(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j))));
-//					} else {
-//						cellValue = StrUtil.trim(BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j))));
-//					}
-					cellValue = BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j)));
+					String cellValue = BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j)));
 					if (isDefine && j2 < endX) {
 						cellValue += " ";
 					}
