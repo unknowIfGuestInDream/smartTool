@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.tlcsdm.common.BaseUtils;
@@ -15,6 +16,8 @@ import com.tlcsdm.diff.DiffHandleUtils;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Console;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.BigExcelWriter;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
@@ -45,22 +48,31 @@ public class GeneralTest {
 	private final String endCellColumn = "F";
 	// excel中Generate Files值对应的Cell
 	private final String generateFileCell = "C15";
-	// Generate Files的父级路径, 如果为空，则默认为parentDirectoryPath值
+	// 待比对文件的父级路径, 如果为空，则默认为parentDirectoryPath值
 	private final String generateFilesParentPath = "C:\\runtime-smc.rh850.product\\src\\smc_gen\\general";
+	// 初始化清理resultPath路径
+	private final boolean initClean = true;
 
 	/*
 	 * 待初始化对象
 	 */
 	// 需要读取的sheetName集合
 	private List<String> sheetNames;
+	// 生成结果目录路径
+	private String resultPath;
+	// 生成结果文件目录路径
+	private String filesPath;
 
-	@Before
+	@BeforeClass
 	public void init() {
 		ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName));
 		sheetNames = reader.getSheetNames().stream()
 				.filter(s -> (markSheetNames.size() == 0 && !ignoreSheetNames.contains(s))
 						|| (markSheetNames.size() != 0 && markSheetNames.contains(s)))
 				.collect(Collectors.toList());
+		resultPath = parentDirectoryPath + "\\" + excelName.substring(0, excelName.lastIndexOf("."));
+		filesPath = resultPath + "\\files";
+		cleanDir(resultPath);
 	}
 
 	/**
@@ -85,50 +97,57 @@ public class GeneralTest {
 			int endY = end.getY();
 			String generateFileName = reader.getCell(generateFileCell).getStringCellValue();
 			generateFileMap.put(sheetName, generateFileName);
-			excelWriter.setSheet(sheetName);
+			excelWriter.renameSheet(0, sheetName);
 			List<List<String>> list = new ArrayList<>(endY - startY + 1);
 			for (int j = startY; j <= endY; j++) {
 				List<String> l = new ArrayList<>(endX - startX + 1);
 				boolean isDefine = false;
 				String firstValue = BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(startX, j)));
-				if ("#define".equals(firstValue) || "#ifndef".equals(firstValue)) {
+				if ("#define".equals(StrUtil.trim(firstValue)) || "#ifndef".equals(StrUtil.trim(firstValue))) {
 					isDefine = true;
 				}
 				for (int j2 = startX; j2 <= endX; j2++) {
 					String cellValue = BaseUtils.valueOf(CellUtil.getCellValue(reader.getCell(j2, j)));
 					if (isDefine && j2 < endX) {
-						cellValue += " ";
+						cellValue = StrUtil.trimEnd(cellValue) + " ";
 					}
 					l.add(cellValue);
 				}
 				list.add(l);
 			}
 			excelWriter.write(list, false);
-			File file = FileUtil.file(parentDirectoryPath + "\\result", sheetName + ".xlsx");
+			File file = FileUtil.file(filesPath, sheetName + ".xlsx");
 			excelWriter.flush(file);
 			excelWriter.close();
 			logHandler("========================= End Reading " + sheetName + " =========================", 1);
 		}
 
 		for (String sheetName : sheetNames) {
-			ExcelReader reader = ExcelUtil.getReader(parentDirectoryPath + "\\result\\" + sheetName + ".xlsx",
-					sheetName);
+			ExcelReader reader = ExcelUtil.getReader(FileUtil.file(filesPath, sheetName + ".xlsx"), sheetName);
 			String generateFileName = generateFileMap.get(sheetName);
 			FileUtil.writeUtf8String(reader.readAsText(false).replaceAll("\\t", ""),
-					FileUtil.file(parentDirectoryPath + "\\result\\files", generateFileName));
+					FileUtil.file(filesPath, generateFileName));
 			reader.close();
 			logHandler("========================= Begin Comparing " + generateFileName + " =========================",
 					1);
-			String generateFileParent = generateFilesParentPath.length() == 0 ? parentDirectoryPath
-					: generateFilesParentPath;
+			String generateFileParent = getGenerateFileParent();
 			File generateFile = FileUtil.file(generateFileParent, generateFileName);
 			if (FileUtil.exist(generateFile)) {
-				List<String> diffString = DiffHandleUtils.diffString(
-						parentDirectoryPath + "\\result\\files\\" + generateFileName,
+				List<String> diffString = DiffHandleUtils.diffString(filesPath + "\\" + generateFileName,
 						generateFileParent + "\\" + generateFileName);
-				DiffHandleUtils.generateDiffHtml(diffString, parentDirectoryPath + "\\result\\" + sheetName + ".html");
+				DiffHandleUtils.generateDiffHtml(diffString, resultPath + "\\" + sheetName + ".html");
 			}
+			ThreadUtil.safeSleep(200);
 			logHandler("========================= End Comparing " + generateFileName + " =========================", 1);
+		}
+	}
+
+	/**
+	 * 清空文件夹
+	 */
+	private void cleanDir(String dirPath) {
+		if (initClean) {
+			FileUtil.clean(dirPath);
 		}
 	}
 
@@ -151,6 +170,13 @@ public class GeneralTest {
 			break;
 		}
 
+	}
+
+	/**
+	 * 获取生成文件路径
+	 */
+	private String getGenerateFileParent() {
+		return generateFilesParentPath.length() == 0 ? parentDirectoryPath : generateFilesParentPath;
 	}
 
 	/**
