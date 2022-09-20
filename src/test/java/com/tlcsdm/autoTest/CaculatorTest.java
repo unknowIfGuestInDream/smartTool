@@ -2,9 +2,8 @@ package com.tlcsdm.autoTest;
 
 import cn.hutool.core.io.resource.ResourceUtil;
 import org.junit.Test;
-import org.sikuli.script.FindFailed;
-import org.sikuli.script.Region;
-import org.sikuli.script.Screen;
+import org.sikuli.basics.Settings;
+import org.sikuli.script.*;
 
 import javax.swing.plaf.multi.MultiPopupMenuUI;
 import java.io.IOException;
@@ -18,9 +17,13 @@ public class CaculatorTest {
 
     @Test
     public void caculatorTest() throws IOException, FindFailed {
-        Runtime.getRuntime().exec("calc.exe");
+        Settings.ActionLogs=false;
+        Settings.InfoLogs=false;
+        ImagePath.setBundlePath("E:\\javaWorkSpace\\smartTool\\src\\main\\resources\\static\\private\\sikuliX\\caculator");
+        App.run("calc.exe");
         Region screen = new Screen();
-        screen.click(ResourceUtil.getResource("static/private/sikuliX/caculator/2.png").getPath());
+        //screen.click(ResourceUtil.getResource("static/private/sikuliX/caculator/2.png").getPath());
+        screen.click("2.png");
         screen.click(ResourceUtil.getResource("static/private/sikuliX/caculator/and.png").getPath());
         screen.click(ResourceUtil.getResource("static/private/sikuliX/caculator/5.png").getPath());
         screen.click(ResourceUtil.getResource("static/private/sikuliX/caculator/equal.png").getPath());

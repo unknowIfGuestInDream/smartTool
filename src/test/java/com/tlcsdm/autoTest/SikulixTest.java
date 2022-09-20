@@ -4,13 +4,13 @@ import org.junit.Test;
 import org.sikuli.basics.HotkeyEvent;
 import org.sikuli.basics.HotkeyListener;
 import org.sikuli.basics.Settings;
-import org.sikuli.script.Key;
-import org.sikuli.script.KeyModifier;
-import org.sikuli.script.Sikulix;
+import org.sikuli.script.*;
 import org.sikuli.script.support.RunTime;
 import org.sikuli.script.support.Runner;
 
 /**
+ * https://sikulix.github.io/docs/api
+ *
  * @author: 唐 亮
  * @date: 2022/9/12 19:42
  * @since: 1.0
@@ -53,5 +53,29 @@ public class SikulixTest {
                 }
             }
         });
+    }
+
+    @Test
+    public void sikulixTest5() {
+        ImagePath.setBundlePath("E:\\javaWorkSpace\\smartTool\\src\\main\\resources\\static\\private\\sikuliX\\caculator");
+//        screen.find("image1");
+//        screen.find("imageset1/image2");
+        ImagePath.getPaths().forEach(System.out::println);
+        //ImagePath.add("E:\\javaWorkSpace");
+        ImagePath.addHTTP("sikulix.com/images");
+    }
+
+    @Test
+    public void sikulixTest6() {
+        App app = App.open("D:\\RedisView\\RedisView\\RedisView.exe");
+        App.open("Google Chrome");
+        App.focus("Google Chrome");
+        app.close();
+        System.out.println(App.getClipboard());
+    }
+
+    @Test
+    public void sikulixTest7() {
+        Region screen = App.start(App.Type.BROWSER);
     }
 }
