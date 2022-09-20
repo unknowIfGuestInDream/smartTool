@@ -113,8 +113,10 @@ public class DiffHandleUtils {
                 "<html lang=\"en-us\">\n" +
                 "  <head>\n" +
                 "    <meta charset=\"utf-8\" />\n" +
+                "    <meta name=\"google\" content=\"notranslate\"/>\n"+
+                "    <meta name=\"author\" content=\"tang97155@163.com\">\n"+
                 "    <link rel=\"stylesheet\" href=\"" + githubCss + "\" />\n" +
-                "     <link rel=\"stylesheet\" type=\"text/css\" href=\"" + diff2htmlCss + "\" />\n" +
+                "    <link rel=\"stylesheet\" type=\"text/css\" href=\"" + diff2htmlCss + "\" />\n" +
                 "    <script type=\"text/javascript\" src=\"" + diff2htmlJs + "\"></script>\n" +
                 "  </head>\n" +
                 "  <script>\n" +
