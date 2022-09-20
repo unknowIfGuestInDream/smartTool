@@ -139,6 +139,7 @@ public class GeneralTest {
 			ThreadUtil.safeSleep(200);
 			logHandler("========================= End Comparing " + generateFileName + " =========================", 1);
 		}
+		logHandler("============================= End =============================", 1);
 	}
 
 	/**
