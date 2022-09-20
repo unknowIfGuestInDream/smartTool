@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.tlcsdm.common.BaseUtils;
@@ -62,7 +62,7 @@ public class GeneralTest {
 	// 生成结果文件目录路径
 	private String filesPath;
 
-	@BeforeClass
+	@Before
 	public void init() {
 		ExcelReader reader = ExcelUtil.getReader(FileUtil.file(parentDirectoryPath, excelName));
 		sheetNames = reader.getSheetNames().stream()
