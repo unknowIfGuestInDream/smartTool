@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.BeforeClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.tlcsdm.common.BaseUtils;
