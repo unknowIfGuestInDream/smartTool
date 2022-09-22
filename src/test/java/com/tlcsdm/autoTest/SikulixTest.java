@@ -16,7 +16,9 @@ import org.sikuli.script.support.Runner;
  * @since: 1.0
  */
 public class SikulixTest {
-
+    //https://blog.csdn.net/stormwy/article/details/7955137
+    //https://www.cnblogs.com/huacaier/p/14688016.html
+    //https://blog.csdn.net/camel2014/article/details/106626704
     @Test
     public void sikulixTest1() {
         Sikulix.popup("Hello World！\n玩得开心！", "test");
