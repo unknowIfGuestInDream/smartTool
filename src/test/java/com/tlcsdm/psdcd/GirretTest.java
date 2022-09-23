@@ -70,7 +70,9 @@ public class GirretTest {
 	 */
 	@Test
 	public void GirretTest1() throws IOException, InterruptedException {
-		HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().header("Content-Type", "application/json")
+		HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().headers("Content-Type", "application/json",
+				"User-Agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.50")
 				.build();
 		HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
 		if (response.statusCode() == 200) {
