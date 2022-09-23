@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +23,7 @@ import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import cn.hutool.poi.excel.style.StyleUtil;
 
 /**
  * 生成代码长度检测
@@ -37,7 +43,7 @@ public class CodeStyleLength120Test {
 	// 初始化删除结果文件
 	private final boolean initClean = true;
 	// 结果信息
-	private List<Map<String, String>> result = new ArrayList<>();
+	private List<Map<String, Object>> result = new ArrayList<>();
 	// 待初始化文件对象
 	private List<File> files;
 
@@ -73,10 +79,10 @@ public class CodeStyleLength120Test {
 				public void handle(String line) {
 					atomicInteger.incrementAndGet();
 					if (line.length() > 120) {
-						Map<String, String> map = new HashMap<>();
-						map.put("lineNumber", String.valueOf(atomicInteger.get()));
+						Map<String, Object> map = new HashMap<>();
+						map.put("lineNumber", atomicInteger.get());
 						map.put("fileName", file.getName());
-						map.put("lineLength", String.valueOf(line.length()));
+						map.put("lineLength", line.length());
 						map.put("filePath", file.getPath());
 						map.put("line", line);
 						result.add(map);
@@ -94,6 +100,8 @@ public class CodeStyleLength120Test {
 			return;
 		}
 		ExcelWriter writer = ExcelUtil.getWriter(FileUtil.file(resultPath, resultFileName));
+		setExcelStyle(writer);
+		handleData(writer);
 		writer.addHeaderAlias("lineNumber", "行号");
 		writer.addHeaderAlias("fileName", "文件名");
 		writer.addHeaderAlias("lineLength", "行文本长度");
@@ -111,6 +119,26 @@ public class CodeStyleLength120Test {
 		if (initClean) {
 			FileUtil.del(file);
 		}
+	}
+
+	// 设置生成的excel样式
+	private void setExcelStyle(ExcelWriter writer) {
+		writer.getStyleSet().setAlign(HorizontalAlignment.LEFT, VerticalAlignment.CENTER);
+		writer.getHeadCellStyle().setAlignment(HorizontalAlignment.CENTER);
+		CellStyle style = writer.getStyleSet().getHeadCellStyle();
+		StyleUtil.setColor(style, IndexedColors.LIGHT_YELLOW, FillPatternType.SOLID_FOREGROUND);
+		writer.setColumnWidth(0, 10);
+		writer.setColumnWidth(1, 20);
+		writer.setColumnWidth(2, 10);
+		writer.setColumnWidth(3, 70);
+		writer.setColumnWidth(4, 20);
+	}
+
+	/**
+	 * 数据处理
+	 */
+	private void handleData(ExcelWriter writer) {
+
 	}
 
 }
