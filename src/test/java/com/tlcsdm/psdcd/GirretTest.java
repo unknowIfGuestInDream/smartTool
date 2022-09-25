@@ -128,11 +128,10 @@ public class GirretTest {
                 map.put("girretNum", String.valueOf(array.getByPath("[" + i + "]._number")));
                 map.put("changeId", String.valueOf(array.getByPath("[" + i + "].change_id")));
                 map.put("subject", String.valueOf(array.getByPath("[" + i + "].subject")));
-                map.put("created", String.valueOf(array.getByPath("[" + i + "].created")));
-                map.put("submitted", String.valueOf(array.getByPath("[" + i + "].submitted")));
+                map.put("created", String.valueOf(array.getByPath("[" + i + "].created")).replace(".000000000", ""));
+                map.put("submitted", String.valueOf(array.getByPath("[" + i + "].submitted")).replace(".000000000", ""));
                 map.put("insertions", String.valueOf(array.getByPath("[" + i + "].insertions")));
                 map.put("deletions", String.valueOf(array.getByPath("[" + i + "].deletions")));
-                map.put("ownerName", String.valueOf(array.getByPath("[" + i + "].owner.name")));
                 map.put("ownerUserName", String.valueOf(array.getByPath("[" + i + "].owner.username")));
                 changesList.add(map);
             }
@@ -144,7 +143,12 @@ public class GirretTest {
      * changes数据过滤
      */
     private boolean changesFilter(Object obj, JSONArray array, int i) {
+        //未合并的提交不统计
         if (!Objects.equals("MERGED", array.getByPath("[" + i + "].status"))) {
+            return false;
+        }
+        //提交者不是userName的不统计
+        if (!Objects.equals(userName, array.getByPath("[" + i + "].owner.username"))) {
             return false;
         }
         //可添加自定义过滤条件
@@ -171,16 +175,15 @@ public class GirretTest {
                 //JSONObject jsonObject = JSONUtil.readJSONObject(FileUtil.file(ResourceUtil.getResource("static/private/girret/comments.json")), CharsetUtil.CHARSET_UTF_8);
                 jsonObject.remove("/PATCHSET_LEVEL");
                 for (Map.Entry<String, Object> vo : jsonObject.entrySet()) {
-                    Map<String, String> map = new HashMap<>(changesList.get(i));
-                    map.put("commentFileName", vo.getKey());
                     JSONArray array = JSONUtil.parseArray(vo.getValue());
                     for (int j = 0; j < array.size(); j++) {
                         String commentMessage = String.valueOf(array.getByPath("[" + j + "].message"));
                         String commentAutherUserName = String.valueOf(array.getByPath("[" + j + "].author.username"));
-                        if ("Done".equals(commentMessage) || map.get("ownerUserName").equals(commentAutherUserName)) {
+                        Map<String, String> comment = new HashMap<>(changesList.get(i));
+                        if ("Done".equals(commentMessage) || comment.get("ownerUserName").equals(commentAutherUserName)) {
                             continue;
                         }
-                        Map<String, String> comment = new HashMap<>(map);
+                        comment.put("commentFileName", vo.getKey());
                         comment.put("commentAutherUserName", commentAutherUserName);
                         comment.put("commentAutherName", String.valueOf(array.getByPath("[" + j + "].author.name")));
                         comment.put("commentMessage", commentMessage);
@@ -208,7 +211,7 @@ public class GirretTest {
         writer.setOnlyAlias(true);
         writer.addHeaderAlias("girretNum", "Girret Number");
         writer.addHeaderAlias("changeId", "changeId");
-        writer.addHeaderAlias("subject", "subject");
+        writer.addHeaderAlias("subject", "提交信息");
         writer.addHeaderAlias("commentAutherName", "指摘人");
         writer.addHeaderAlias("commentMessage", "指摘信息");
         writer.addHeaderAlias("submitted", "合并时间");
