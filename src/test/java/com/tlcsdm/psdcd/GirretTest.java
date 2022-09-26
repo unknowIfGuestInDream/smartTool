@@ -67,7 +67,7 @@ public class GirretTest {
 	// 结果信息输出路径
 	private final String resultPath = "C:\\workspace\\test";
 	// 结果文件名称(目前支持结果输出到excel)
-	private final String resultFileName = "GirretComments.xlsx";
+	private static String resultFileName;
 	// 是否保留json文件到resultPath路径下
 	private final boolean reserveJson = false;
 	// 忽略的girret number
@@ -102,6 +102,7 @@ public class GirretTest {
 		if (!ownerEmail.startsWith(userName)) {
 			paramQ = "owner:" + ownerEmail;
 		}
+		resultFileName = "GirretComments_" + StrUtil.subBefore(ownerEmail, "@", false) + ".xlsx";
 	}
 
 	/**
