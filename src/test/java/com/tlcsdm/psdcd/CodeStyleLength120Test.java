@@ -31,7 +31,7 @@ import cn.hutool.poi.excel.style.StyleUtil;
 public class CodeStyleLength120Test {
 
 	// 待比对文件的父级路径
-	private final String generateFilesParentPath = "C:\\runtime-smc.rh850.product\\src\\smc_gen\\general";
+	private final String generateFilesParentPath = "C:\\runtime-smc.rh850.product\\src\\smc_gen";
 	// 检测的文件类型(填文件后缀即可)
 	private final List<String> fileTypeList = List.of("h", "c");
 	// 忽略的文件
@@ -131,7 +131,7 @@ public class CodeStyleLength120Test {
 		writer.setColumnWidth(1, 20);
 		writer.setColumnWidth(2, 10);
 		writer.setColumnWidth(3, 70);
-		writer.setColumnWidth(4, 20);
+		writer.setColumnWidth(4, 110);
 	}
 
 	/**
