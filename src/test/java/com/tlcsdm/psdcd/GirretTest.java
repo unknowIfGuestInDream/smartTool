@@ -87,6 +87,7 @@ public class GirretTest {
 	private static HttpClient client;
 	private List<Map<String, String>> changesList = new ArrayList<>();
 	private List<Map<String, String>> commentsList = new ArrayList<>();
+	private boolean changesEnd = false;
 
 	@BeforeClass
 	public static void init() {
@@ -128,9 +129,8 @@ public class GirretTest {
 				// JSONUtil.readJSONArray(FileUtil.file(ResourceUtil.getResource("static/private/girret/changes.json")),
 				// CharsetUtil.CHARSET_UTF_8);
 				JSONArray array = JSONUtil.parseArray(result);
-				boolean isEnd = array.size() < paramN;
 				handleChanges(array);
-				if (isEnd) {
+				if (changesEnd) {
 					break;
 				}
 				paramS = paramS + paramN;
@@ -163,6 +163,9 @@ public class GirretTest {
 				map.put("ownerUserName", String.valueOf(array.getByPath("[" + i + "].owner.username")));
 				changesList.add(map);
 			}
+		}
+		if (array.size() < paramN) {
+			changesEnd = true;
 		}
 		// 可增加后续数据处理
 	}
