@@ -3,11 +3,7 @@ package com.tlcsdm.psdcd;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sikuli.basics.Settings;
-import org.sikuli.script.App;
-import org.sikuli.script.FindFailed;
-import org.sikuli.script.ImagePath;
-import org.sikuli.script.Region;
-import org.sikuli.script.Screen;
+import org.sikuli.script.*;
 
 public class AutoTest {
 
@@ -49,5 +45,8 @@ public class AutoTest {
 //		r.mouseWheel(Button.WHEEL_DOWN);
 //		r.delay(50);
 		screen.dragDrop("scroll_down");
+//		t = screen.find("").below().find("");
+		//向上拖动10
+//		screen.dragDrop(t, new Location(t.x,t.y-10));
 	}
 }

@@ -80,4 +80,14 @@ public class SikulixTest {
     public void sikulixTest7() {
         Region screen = App.start(App.Type.BROWSER);
     }
+
+    @Test
+    public void sikulixTest8() {
+        App.open("Google Chrome");
+        Region screen = new Screen();
+        screen.wheel(Button.WHEEL_DOWN, 20);
+//        ImageScrollbar = ("bar.png")
+//        regionScrollbar = find(ImageScrollbar)
+//        dragDrop(regionScrollbar, Location(regionScrollbar.getX(), regionScrollbar.getY() + 100))
+    }
 }
