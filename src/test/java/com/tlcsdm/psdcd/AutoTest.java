@@ -27,6 +27,7 @@ public class AutoTest {
 		screen.click("unexpand");
 		screen.exists("R7F702300EBBG", 1).click();
 		screen.type("fileName", "testapi");
+		//screen.paste("fileName", "testapi");
 		screen.click("button_finish");
 		if (screen.has("hasSameFileName", 2000)) {
 			screen.click("button_yes");
