@@ -14,3 +14,7 @@ documentation:
 dependencies:
   - pom.xml
   - src/main/resources/lib/**
+
+automerge:
+  - all: [ 'README.md' ]
+  - all: [ '.github/**' ]
