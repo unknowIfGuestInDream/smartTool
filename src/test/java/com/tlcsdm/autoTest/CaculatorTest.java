@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.*;
 
-import javax.swing.plaf.multi.MultiPopupMenuUI;
 import java.io.IOException;
 
 /**
@@ -17,8 +16,8 @@ public class CaculatorTest {
 
     @Test
     public void caculatorTest() throws IOException, FindFailed {
-        Settings.ActionLogs=false;
-        Settings.InfoLogs=false;
+        Settings.ActionLogs = false;
+        Settings.InfoLogs = false;
         ImagePath.setBundlePath("E:\\javaWorkSpace\\smartTool\\src\\main\\resources\\static\\private\\sikuliX\\caculator");
         App.run("calc.exe");
         Region screen = new Screen();
