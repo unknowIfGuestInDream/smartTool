@@ -10,6 +10,7 @@ workflow:
 documentation:
   - LICENSE
   - README.md
+  - CONTRIBUTORS.md
 
 dependencies:
   - pom.xml
@@ -18,3 +19,4 @@ dependencies:
 automerge:
   - all: [ 'README.md' ]
   - all: [ '.github/**' ]
+  - all: [ 'CONTRIBUTORS.md' ]

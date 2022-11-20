@@ -7,12 +7,14 @@ on:
       - '.github/**'
       - 'README.md'
       - '.gitignore'
+      - 'CONTRIBUTORS.md'
   pull_request:
     branches: [ "master" ]
     paths-ignore:
       - '.github/**'
       - 'README.md'
       - '.gitignore'
+      - 'CONTRIBUTORS.md'
 
 jobs:
   codacy-security-scan:
