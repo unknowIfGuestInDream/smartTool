@@ -6,16 +6,18 @@ name: Java CI with Maven
 on:
   push:
     branches: [ "master" ]
-    paths-ignore:
-      - '.github/**'
-      - 'README.md'
-      - '.gitignore'
   pull_request:
     branches: [ "master" ]
-    paths-ignore:
-      - '.github/**'
-      - 'README.md'
-      - '.gitignore'
+  pull_request_target:
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
 
 jobs:
   build:

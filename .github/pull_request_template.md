@@ -22,5 +22,5 @@ Fixes #
 
 ### Reviewing Maintainer
 
-- [ ] Label as either `enhancement`, `bug`, `documentation` or `dependencies`
+- [ ] Label as either `enhancement`, `bug`, `documentation`, `style` or `dependencies`
 - [ ] Verify design and implementation 

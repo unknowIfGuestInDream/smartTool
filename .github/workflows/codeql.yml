@@ -18,6 +18,7 @@ on:
       - '.github/**'
       - 'README.md'
       - '.gitignore'
+      - 'CONTRIBUTORS.md'
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "master" ]
@@ -25,6 +26,7 @@ on:
       - '.github/**'
       - 'README.md'
       - '.gitignore'
+      - 'CONTRIBUTORS.md'
   schedule:
     - cron: '16 7 * * 2'
 
